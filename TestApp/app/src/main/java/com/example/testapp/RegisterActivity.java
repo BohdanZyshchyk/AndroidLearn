@@ -2,15 +2,16 @@ package com.example.testapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.example.testapp.constants.Urls;
 import com.example.testapp.dto.LoginResultDto;
 import com.example.testapp.dto.RegisterDTO;
+import com.example.testapp.dto.RegisterValidationDTO;
 import com.example.testapp.network.AccountService;
 import com.example.testapp.network.ImageRequester;
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         final TextInputLayout emailLayout = findViewById(R.id.inputLayoutEmail);
         final TextInputEditText email = findViewById(R.id.textFieldEmail);
 
-        final TextInputLayout emailPassword = findViewById(R.id.inputLayoutPassword);
+        final TextInputLayout passwordLayout = findViewById(R.id.inputLayoutPassword);
         final TextInputEditText password = findViewById(R.id.textFieldPassword);
         //Log.d("clickLogin", email.getText().toString());
         //emailLayout.setError("У нас проблеми");
@@ -52,21 +53,55 @@ public class RegisterActivity extends AppCompatActivity {
                 password.getText().toString(),
                 displayName.getText().toString()
         );
+        final RegisterActivity registerActivity = this;
         AccountService.getInstance()
                 .getJSONApi()
                 .register(model)
                 .enqueue(new Callback<LoginResultDto>() {
                     @Override
                     public void onResponse(Call<LoginResultDto> call, Response<LoginResultDto> response) {
+
                         if(response.isSuccessful()) {
+                            displayNameLayout.setError("");
+                            emailLayout.setError("");
+                            passwordLayout.setError("");
                             LoginResultDto result = response.body();
                             Log.d("Good Request", result.getToken());
+                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                            startActivity(intent);
                         }
                         else
                         {
                             try {
                                 String json = response.errorBody().string();
-                                Gson 
+                                RegisterValidationDTO result = new Gson().fromJson(json, RegisterValidationDTO.class);
+                                String str="";
+                                if(result.getErrors().getDisplayName()!=null)
+                                {
+                                    for (String item: result.getErrors().getDisplayName()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                displayNameLayout.setError(str);
+
+                                 str="";
+                                if(result.getErrors().getEmail()!=null)
+                                {
+                                    for (String item: result.getErrors().getEmail()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                emailLayout.setError(str);
+
+                                str="";
+                                if(result.getErrors().getPassword()!=null)
+                                {
+                                    for (String item: result.getErrors().getPassword()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                passwordLayout.setError(str);
+
                                 Log.d("Bad request: ", json);
                             } catch (Exception ex) {
 
@@ -76,8 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<LoginResultDto> call, Throwable t) {
-//                        String json = t.getLocalizedMessage();
-                        Log.d("err: ", t.getLocalizedMessage());
+
                     }
                 });
     }

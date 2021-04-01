@@ -2,6 +2,7 @@ package com.example.testapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -95,7 +96,8 @@ public class LoginActivity extends AppCompatActivity {
                         CommonUtils.hideLoading();
                         if(response.isSuccessful())
                         {
-
+                            Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                            startActivity(intent);
                         }
                         else
                         {
