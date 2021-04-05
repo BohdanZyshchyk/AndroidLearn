@@ -21,36 +21,36 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        AccountService.getInstance()
-                .getJSONApi()
-                .login(loginDto)
-                .enqueue(new Callback<LoginResultDto>() {
-                    @Override
-                    public void onResponse(Call<LoginResultDto> call, Response<LoginResultDto> response) {
-//                        Log.d("super","Ok result good");
-                        CommonUtils.hideLoading();
-                        if(response.isSuccessful())
-                        {
-                            Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-                            startActivity(intent);
-                        }
-                        else
-                        {
-                            try {
-                                String json = response.errorBody().string();
-                                Log.e("BadRequest", json);
-                            } catch (Exception ex) {
-
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<LoginResultDto> call, Throwable t) {
-                        Log.e("problem","problem API"+ t.getMessage());
-                        CommonUtils.hideLoading();
-                    }
-                });
+//        AccountService.getInstance()
+//                .getJSONApi()
+//                .login(loginDto)
+//                .enqueue(new Callback<LoginResultDto>() {
+//                    @Override
+//                    public void onResponse(Call<LoginResultDto> call, Response<LoginResultDto> response) {
+////                        Log.d("super","Ok result good");
+//                        CommonUtils.hideLoading();
+//                        if(response.isSuccessful())
+//                        {
+////                            Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+////                            startActivity(intent);
+//                        }
+//                        else
+//                        {
+//                            try {
+//                                String json = response.errorBody().string();
+//                                Log.e("BadRequest", json);
+//                            } catch (Exception ex) {
+//
+//                            }
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<LoginResultDto> call, Throwable t) {
+//                        Log.e("problem","problem API"+ t.getMessage());
+//                        CommonUtils.hideLoading();
+//                    }
+//                });
     }
 }

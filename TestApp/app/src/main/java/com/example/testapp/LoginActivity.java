@@ -13,11 +13,13 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.example.testapp.constants.Urls;
 import com.example.testapp.dto.LoginDto;
 import com.example.testapp.dto.LoginResultDto;
+import com.example.testapp.dto.RegisterValidationDTO;
 import com.example.testapp.network.AccountService;
 import com.example.testapp.network.ImageRequester;
 import com.example.testapp.utils.CommonUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -103,7 +105,34 @@ public class LoginActivity extends AppCompatActivity {
                         {
                             try {
                                 String json = response.errorBody().string();
-                                Log.e("BadRequest", json);
+                                RegisterValidationDTO result = new Gson().fromJson(json, RegisterValidationDTO.class);
+                                String str="";
+                                if(result.getErrors().getDisplayName()!=null)
+                                {
+                                    for (String item: result.getErrors().getDisplayName()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+
+                                str="";
+                                if(result.getErrors().getEmail()!=null)
+                                {
+                                    for (String item: result.getErrors().getEmail()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                emailLayout.setError(str);
+
+                                str="";
+                                if(result.getErrors().getPassword()!=null)
+                                {
+                                    for (String item: result.getErrors().getPassword()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                passwordLayout.setError(str);
+
+                                Log.d("Bad request: ", json);
                             } catch (Exception ex) {
 
                             }
@@ -117,5 +146,10 @@ public class LoginActivity extends AppCompatActivity {
                         CommonUtils.hideLoading();
                     }
                 });
+    }
+
+    public void onClickRegister(View view) {
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(intent);
     }
 }
