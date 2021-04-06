@@ -2,17 +2,21 @@ package com.example.testapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.example.testapp.constants.Urls;
 import com.example.testapp.dto.LoginDto;
 import com.example.testapp.dto.LoginResultDto;
+import com.example.testapp.dto.LoginValidationDTO;
 import com.example.testapp.dto.RegisterValidationDTO;
 import com.example.testapp.network.AccountService;
 import com.example.testapp.network.ImageRequester;
@@ -29,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private ImageRequester imageRequester;
     private NetworkImageView myImage;
+    private TextView textInvalid;
+    public static final String APP_PREFERENCES = "mysettings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         imageRequester = ImageRequester.getInstance();
         myImage = findViewById(R.id.myimg);
         imageRequester.setImageFromUrl(myImage, url);
+        textInvalid = findViewById(R.id.textLoginInvalid);
 
     }
 
@@ -98,23 +105,23 @@ public class LoginActivity extends AppCompatActivity {
                         CommonUtils.hideLoading();
                         if(response.isSuccessful())
                         {
+                            textInvalid.setText("");
+                            emailLayout.setError("");
+                            passwordLayout.setError("");
+                            LoginResultDto result = response.body();
+                            SharedPreferences preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+                            preferences.edit().putString("TOKEN", result.getToken()).apply();
+
                             Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                             startActivity(intent);
+//                            Log.d("Good Request", result.getToken());
                         }
                         else
                         {
                             try {
                                 String json = response.errorBody().string();
-                                RegisterValidationDTO result = new Gson().fromJson(json, RegisterValidationDTO.class);
+                                LoginValidationDTO result = new Gson().fromJson(json, LoginValidationDTO.class);
                                 String str="";
-                                if(result.getErrors().getDisplayName()!=null)
-                                {
-                                    for (String item: result.getErrors().getDisplayName()) {
-                                        str+=item+"\n";
-                                    }
-                                }
-
-                                str="";
                                 if(result.getErrors().getEmail()!=null)
                                 {
                                     for (String item: result.getErrors().getEmail()) {
@@ -131,6 +138,15 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
                                 passwordLayout.setError(str);
+
+                                str="";
+                                if(result.getErrors().getInvalid()!=null)
+                                {
+                                    for (String item: result.getErrors().getInvalid()) {
+                                        str+=item+"\n";
+                                    }
+                                }
+                                textInvalid.setText(str);
 
                                 Log.d("Bad request: ", json);
                             } catch (Exception ex) {
@@ -149,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onClickRegister(View view) {
-        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 }

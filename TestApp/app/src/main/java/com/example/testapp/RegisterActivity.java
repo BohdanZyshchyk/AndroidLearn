@@ -53,7 +53,6 @@ public class RegisterActivity extends AppCompatActivity {
                 password.getText().toString(),
                 displayName.getText().toString()
         );
-        final RegisterActivity registerActivity = this;
         AccountService.getInstance()
                 .getJSONApi()
                 .register(model)
@@ -67,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
                             passwordLayout.setError("");
                             LoginResultDto result = response.body();
                             Log.d("Good Request", result.getToken());
-                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                            Intent intent = new Intent(RegisterActivity.this, ProfileActivity.class);
                             startActivity(intent);
                         }
                         else
@@ -117,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onClickLogin(View view) {
-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 }
