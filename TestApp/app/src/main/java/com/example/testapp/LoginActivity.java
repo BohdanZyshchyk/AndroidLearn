@@ -2,9 +2,7 @@ package com.example.testapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,13 +11,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.example.testapp.application.HomeApplication;
 import com.example.testapp.constants.Urls;
-import com.example.testapp.dto.LoginDto;
-import com.example.testapp.dto.LoginResultDto;
-import com.example.testapp.dto.LoginValidationDTO;
-import com.example.testapp.dto.RegisterValidationDTO;
-import com.example.testapp.network.AccountService;
+import com.example.testapp.dto.account.LoginDto;
+import com.example.testapp.dto.account.LoginResultDto;
+import com.example.testapp.dto.account.LoginValidationDTO;
+import com.example.testapp.network.account.AccountService;
 import com.example.testapp.network.ImageRequester;
+import com.example.testapp.security.JwtSecurityService;
 import com.example.testapp.utils.CommonUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -34,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     private ImageRequester imageRequester;
     private NetworkImageView myImage;
     private TextView textInvalid;
-    public static final String APP_PREFERENCES = "mysettings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         final TextInputEditText email = findViewById(R.id.textInputEmail);
         final TextInputLayout emailLayout = findViewById(R.id.textFieldEmail);
         final TextInputEditText password = findViewById(R.id.textInputPassword);
-        final TextInputLayout passwordLayout = findViewById(R.id.textFieldPassword);
+        final TextInputLayout passwordLayout = findViewById(R.id.textFieldPhone);
 
         LoginDto loginDto = new LoginDto(
                 email.getText().toString(),
@@ -109,8 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                             emailLayout.setError("");
                             passwordLayout.setError("");
                             LoginResultDto result = response.body();
-                            SharedPreferences preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-                            preferences.edit().putString("TOKEN", result.getToken()).apply();
+
+                            JwtSecurityService jwtService = (JwtSecurityService)HomeApplication.getInstance();
+                            jwtService.saveJwtToken(result.getToken());
 
                             Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                             startActivity(intent);
