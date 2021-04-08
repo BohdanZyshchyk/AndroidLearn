@@ -37,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
         final TextView email = findViewById(R.id.profileEmail);
         final NetworkImageView imageView = findViewById(R.id.profileImage);
         final TextView name = findViewById(R.id.profileName);
+        final TextView phone = findViewById(R.id.profilePhone);
         imageRequester = ImageRequester.getInstance();
         CommonUtils.showLoading(this);
         ApiWebService.getInstance()
@@ -56,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
                             email.setText(result.getEmail());
                             imageRequester.setImageFromUrl(imageView, url);
                             name.setText(result.getUserName());
+                            phone.setText(result.getPhone());
 //                            Log.d("Good Request", result.getToken());
                         }
                         else

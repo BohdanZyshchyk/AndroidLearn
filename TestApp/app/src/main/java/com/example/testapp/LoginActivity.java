@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         final TextInputEditText email = findViewById(R.id.textInputEmail);
         final TextInputLayout emailLayout = findViewById(R.id.textFieldEmail);
         final TextInputEditText password = findViewById(R.id.textInputPassword);
-        final TextInputLayout passwordLayout = findViewById(R.id.textFieldPhone);
+        final TextInputLayout passwordLayout = findViewById(R.id.textFieldPassword);
 
         LoginDto loginDto = new LoginDto(
                 email.getText().toString(),

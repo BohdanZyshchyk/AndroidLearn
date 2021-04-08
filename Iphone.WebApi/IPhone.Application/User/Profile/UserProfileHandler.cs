@@ -30,9 +30,11 @@ namespace IPhone.Application.User.Profile
 
             return new UserViewModel
             {
+                Phone = user.Phone,
                 DisplayName = user.DisplayName,
                 Image = "profile.jpg",
-                UserName = user.UserName
+                UserName = user.UserName,
+                Email = user.UserName
             };
             //throw new RestException(HttpStatusCode.NotFound);
         }
